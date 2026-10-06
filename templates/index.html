@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block title %}Catálogo - Mi Tienda{% endblock %}
+
+{% block content %}
+
+<section class="catalog-header">
+
+    <div>
+        <h1>Todos los productos</h1>
+
+        {% if search %}
+            <p>
+                Resultados para:
+                <strong>{{ search }}</strong>
+            </p>
+        {% endif %}
+    </div>
+
+</section>
+
+
+<section class="categories">
+
+    <a
+        href="{{ url_for('home', search=search) }}"
+        class="{% if not selected_category %}active{% endif %}"
+    >
+        Todos
+    </a>
+
+    {% for category in categories %}
+
+        <a
+            href="{{ url_for('home', category=category['category'], search=search) }}"
+            class="{% if selected_category == category['category'] %}active{% endif %}"
+        >
+            {{ category['category'] }}
+        </a>
+
+    {% endfor %}
+
+</section>
+
+
+{% if products %}
+
+    <section class="product-grid">
+
+        {% for product in products %}
+
+            <article class="product-card">
+
+                <div class="product-image">
+
+                    {% if product['image'] %}
+
+                        <img
+                            src="{{ url_for('static', filename='images/' + product['image']) }}"
+                            alt="{{ product['name'] }}"
+                        >
+
+                    {% else %}
+
+                        <div class="image-placeholder">
+                            Sin imagen
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="product-info">
+
+                    <span class="product-category">
+                        {{ product['category'] }}
+                    </span>
+
+                    <h2>
+                        {{ product['name'] }}
+                    </h2>
+
+                    <p class="product-description">
+                        {{ product['description'] }}
+                    </p>
+
+                    <p class="product-price">
+                        ${{ "%.2f"|format(product['price']) }}
+                    </p>
+
+                    {% if product['stock'] > 0 %}
+
+                        <p class="stock available">
+                            Disponible
+                        </p>
+
+                    {% else %}
+
+                        <p class="stock unavailable">
+                            Agotado
+                        </p>
+
+                    {% endif %}
+
+
+                    <div class="product-actions">
+
+                        <a
+                            href="#"
+                            class="button secondary-button"
+                        >
+                            Ver producto
+                        </a>
+
+                        <button
+                            type="button"
+                            class="button primary-button"
+                            {% if product['stock'] <= 0 %}disabled{% endif %}
+                        >
+                            Agregar al carrito
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </article>
+
+        {% endfor %}
+
+    </section>
+
+{% else %}
+
+    <section class="no-products">
+
+        <h2>No encontramos productos</h2>
+
+        <p>
+            Intenta realizar otra búsqueda o seleccionar otra categoría.
+        </p>
+
+        <a href="{{ url_for('home') }}" class="button primary-button">
+            Ver todos los productos
+        </a>
+
+    </section>
+
+{% endif %}
+
+{% endblock %}
+
+}
+
